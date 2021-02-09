@@ -65,6 +65,7 @@ usersRouter.get('/newRandomUser', function (request, response) { return __awaite
                         picture: person.picture
                     };
                     usersList.push(newUser);
+                    console.log(newUser);
                     return response.json(newUser);
                 })];
             case 1: return [2 /*return*/, _a.sent()];
@@ -82,21 +83,9 @@ usersRouter.get('/getNames', function (req, res) { return __awaiter(void 0, void
         names = [];
         usersList.map(function (user) {
             names.push(user.name);
+            console.log(user.name);
         });
         return [2 /*return*/, res.json(names)];
     });
 }); });
-/*
-usersRoutergetUsers(): Promise<User[]> {
-    // For now, consider the data is stored on a static `users.json` file
-    return fetch('/users.json')
-    // the JSON body is taken from the response
-    .then(res => res.json())
-    .then(res => {
-            // The response has an `any` type, so we need to cast
-            // it to the `User` type, and return it from the promise
-            return res as User[]
-    })
-}
-*/
 exports.default = usersRouter;

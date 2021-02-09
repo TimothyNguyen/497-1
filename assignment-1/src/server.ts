@@ -3,8 +3,8 @@ import axios from 'axios';
 
 const usersRouter = Router();
 
-const url = "https://randomuser.me/api";
-const pageNum = "?page=";
+const url:string = "https://randomuser.me/api";
+const pageNum:string = "?page=";
 
 interface User {
     gender: string,
@@ -42,6 +42,7 @@ usersRouter.get('/newRandomUser', async (request: Request, response: Response): 
                 picture: person.picture
             };
             usersList.push(newUser);
+            console.log(newUser);
             return response.json(newUser);
         }
     );
@@ -56,6 +57,7 @@ usersRouter.get('/getNames', async (req: Request, res: Response) => {
     const names: Array<String> = [];
     usersList.map(user => {
         names.push(user.name);
+        console.log(user.name);
     })
     return res.json(names);
 });
