@@ -55,12 +55,17 @@ usersRouter.get('/newRandomUser', function (request, response) { return __awaite
                     .get("" + url + pageNum + 1)
                     .then(function (res) {
                     var person = res.data.results[0];
-                    // console.log(person.gender);
-                    // console.log(person.name);
-                    // console.log(person.location);
-                    // let newUser: User = [gender: ""]
-                    usersList.push(person);
-                    return response.json(person);
+                    var newUser = {
+                        "gender": person.gender,
+                        "name": person.name.first + " " + person.name.last,
+                        "email": person.email,
+                        "age": person.dob.age,
+                        phone: person.phone,
+                        cell: person.cell,
+                        picture: person.picture
+                    };
+                    usersList.push(newUser);
+                    return response.json(newUser);
                 })];
             case 1: return [2 /*return*/, _a.sent()];
         }
@@ -68,7 +73,30 @@ usersRouter.get('/newRandomUser', function (request, response) { return __awaite
 }); });
 usersRouter.get('/countUsers', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        return [2 /*return*/, response.json(usersList)];
+        return [2 /*return*/, response.json(usersList.length)];
     });
 }); });
+usersRouter.get('/getNames', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var names;
+    return __generator(this, function (_a) {
+        names = [];
+        usersList.map(function (user) {
+            names.push(user.name);
+        });
+        return [2 /*return*/, res.json(names)];
+    });
+}); });
+/*
+usersRoutergetUsers(): Promise<User[]> {
+    // For now, consider the data is stored on a static `users.json` file
+    return fetch('/users.json')
+    // the JSON body is taken from the response
+    .then(res => res.json())
+    .then(res => {
+            // The response has an `any` type, so we need to cast
+            // it to the `User` type, and return it from the promise
+            return res as User[]
+    })
+}
+*/
 exports.default = usersRouter;

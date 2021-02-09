@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, response } from 'express';
 import axios from 'axios';
 
 const usersRouter = Router();
@@ -8,15 +8,17 @@ const pageNum = "?page=";
 
 interface User {
     gender: string,
-    name: object,
-    location: object,
+    name: string,
     email: string,
-    login: object
-    dob: object,
-    registered: object,
+    age: Number,
     phone: string,
     cell: string,
     picture: object
+}
+
+interface Name {
+    name: string,
+
 }
 
 let usersList:Array<User> = [];
@@ -25,17 +27,22 @@ usersRouter.get('/', (request: Request, response: Response) => {
     return response.json("OK");
 });
 
-usersRouter.get('/newRandomUser', async (request: Request, response: Response) => {
+usersRouter.get('/newRandomUser', async (request: Request, response: Response): Promise<Response<any, Record<string, any>>> => {
     return await axios
         .get(`${url}${pageNum}${1}`)
         .then((res) => {
-            const person = res.data.results[0] as User;
-            // console.log(person.gender);
-            // console.log(person.name);
-            // console.log(person.location);
-            // let newUser: User = [gender: ""]
-            usersList.push(person);
-            return response.json(person);
+            const person = res.data.results[0];
+            const newUser:User = <User><unknown>{
+                "gender": person.gender,
+                "name": person.name.first + " " + person.name.last,
+                "email": person.email,
+                "age": person.dob.age,
+                phone: person.phone,
+                cell: person.cell,
+                picture: person.picture
+            };
+            usersList.push(newUser);
+            return response.json(newUser);
         }
     );
 });
@@ -45,13 +52,12 @@ usersRouter.get('/countUsers', async (request: Request, response: Response) => {
 });
 
 
-usersRouter.get('/countUsers', async (request: Request, response: Response) => {
-    return response.json(usersList.length);
+usersRouter.get('/getNames', async (req: Request, res: Response) => {
+    const names: Array<String> = [];
+    usersList.map(user => {
+        names.push(user.name);
+    })
+    return res.json(names);
 });
-
-
-
-
-
   
 export default usersRouter;
