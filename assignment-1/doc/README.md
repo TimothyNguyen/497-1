@@ -30,3 +30,17 @@ truncate.
 I found that DefinitelyTyped was pretty cool since it held the type
 declaration files that would help keep types in check for a variety of javascript libraries. I utilized it for the nodejs and expressjs
 libraries and it was really useful.
+
+Note: src folder stores the typescript files while lib stores the outputted js files after the command `tsc`
+
+File Directory:
+assignment-1/
+    package.json
+    tsconfig.json
+    src/
+        app.ts
+        server.ts
+    lib/
+        app.js
+        server.js
+    doc/README.md
