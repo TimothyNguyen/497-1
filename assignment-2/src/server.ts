@@ -16,10 +16,6 @@ interface User {
     picture: object
 }
 
-interface Name {
-    name: string,
-
-}
 
 let usersList:Array<User> = [];
 
