@@ -35,12 +35,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
-var axios_1 = __importDefault(require("axios"));
+var axios = require('axios');
 var usersRouter = express_1.Router();
 var url = "https://randomuser.me/api";
 var pageNum = "?page=";
@@ -51,7 +48,7 @@ usersRouter.get('/', function (request, response) {
 usersRouter.get('/newRandomUser', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, axios_1.default
+            case 0: return [4 /*yield*/, axios
                     .get("" + url + pageNum + 1)
                     .then(function (res) {
                     var person = res.data.results[0];
@@ -65,8 +62,8 @@ usersRouter.get('/newRandomUser', function (request, response) { return __awaite
                         picture: person.picture
                     };
                     usersList.push(newUser);
-                    console.log(newUser);
-                    return response.json(newUser);
+                    var ans = response.json(newUser);
+                    return ans;
                 })];
             case 1: return [2 /*return*/, _a.sent()];
         }
@@ -77,13 +74,22 @@ usersRouter.get('/countUsers', function (request, response) { return __awaiter(v
         return [2 /*return*/, response.json(usersList.length)];
     });
 }); });
+usersRouter.get('/filterByAge', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var age, users;
+    return __generator(this, function (_a) {
+        age = request.body;
+        users = usersList.filter(function (user) {
+            return user.age >= age.lower && user.age <= age.upper;
+        });
+        return [2 /*return*/, response.json([])];
+    });
+}); });
 usersRouter.get('/getNames', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var names;
     return __generator(this, function (_a) {
         names = [];
         usersList.map(function (user) {
             names.push(user.name);
-            console.log(user.name);
         });
         return [2 /*return*/, res.json(names)];
     });

@@ -5,9 +5,9 @@ grab random users. Get random users from the api and it is saved to a list, whic
 
 To run the code:
 Open terminal:
-    > cd assignment-1
+    > cd assignment-2
     > tsc
-    > node lib/app.js
+    > npm start
 
 To run the api, utilize a web browser or a postman api
 
@@ -20,6 +20,10 @@ GET: http://localhost:3000/users/newRandomUser
 GET: http://localhost:3000/users/countUsers
 3. Retrieve names
 GET: http://localhost:3000/users/getNames
+4. Retrieve people by age
+GET: http://localhost:3000/users/filterByAge
+    - When using postman, utilize the x-www-form-urlencoded and 
+    have keys lower and upper.
 
 
 Throughout the process, I wanted to create a server to run my queries
@@ -34,7 +38,7 @@ libraries and it was really useful.
 Note: src folder stores the typescript files while lib stores the outputted js files after the command `tsc`
 
 File Directory:
-assignment-1/
+assignment-2/
     package.json
     tsconfig.json
     src/

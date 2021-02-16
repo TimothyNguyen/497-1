@@ -1,5 +1,5 @@
 import { Router, Request, Response, response } from 'express';
-import axios from 'axios';
+const axios =  require('axios');
 
 const usersRouter = Router();
 
@@ -16,19 +16,18 @@ interface User {
     picture: object
 }
 
-
 let usersList:Array<User> = [];
 
 usersRouter.get('/', (request: Request, response: Response) => {
     return response.json("OK");
 });
 
-usersRouter.get('/newRandomUser', async (request: Request, response: Response): Promise<Response<any, Record<string, any>>> => {
+usersRouter.get('/newRandomUser', async (request: Request, response: Response): Promise<Response<User>> => {
     return await axios
         .get(`${url}${pageNum}${1}`)
-        .then((res) => {
+        .then((res: any) => {
             const person = res.data.results[0];
-            const newUser:User = <User><unknown>{
+            const newUser:User = <User>{
                 "gender": person.gender,
                 "name": person.name.first + " " + person.name.last,
                 "email": person.email,
@@ -38,22 +37,37 @@ usersRouter.get('/newRandomUser', async (request: Request, response: Response): 
                 picture: person.picture
             };
             usersList.push(newUser);
-            console.log(newUser);
-            return response.json(newUser);
+            let ans:Response<User> = response.json(newUser);
+            return ans;
         }
     );
 });
 
-usersRouter.get('/countUsers', async (request: Request, response: Response) => {
+usersRouter.get('/countUsers', async (request: Request, response: Response): Promise<Response<Number>> => {
     return response.json(usersList.length);
 });
 
+usersRouter.get('/filterByAge', async(request: Request, response: Response): Promise<Response<Array<User>>> => {
+    
+    interface Age {
+        lower: Number,
+        upper: Number,
+    }
 
-usersRouter.get('/getNames', async (req: Request, res: Response) => {
+    const age = request.body as Age;
+
+    let users: Array<User> = usersList.filter(user => {
+        return user.age >= age.lower && user.age <= age.upper;
+    });
+
+    return response.json(users);
+});
+
+
+usersRouter.get('/getNames', async (req: Request, res: Response): Promise<Response<Array<String>>> => {
     const names: Array<String> = [];
     usersList.map(user => {
         names.push(user.name);
-        console.log(user.name);
     })
     return res.json(names);
 });
