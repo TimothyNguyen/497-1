@@ -1,4 +1,4 @@
-const axios = require('axios')
+const axios = require('axios');
 const http = require('http');
 
 import { User } from "./User"; 
@@ -20,17 +20,6 @@ async function getNewUser(): Promise<any> {
                     "age": person.dob.age,
                     "gender": person.gender,
                 }
-                /*
-                const newUser:User = <User>{
-                    "gender": person.gender,
-                    "name": person.name.first + " " + person.name.last,
-                    "email": person.email,
-                    "age": person.dob.age,
-                    phone: person.phone,
-                    cell: person.cell,
-                    picture: person.picture
-                }; 
-                */
                 return newUser;
             });
         return response;
@@ -70,6 +59,11 @@ function filterUsersByAge(usersList:Array<User>, lowerAge: Number, upperAge: Num
 async function main() {
     let ans: Array<User> = await generateUsers(20);
     let under35: User[] = filterUsersByAge(ans, 0, 35);
-    console.log(under35);
+    console.log("People under 35 years old: ");
+    under35.forEach(person => {
+        console.log(person.name + " is " + 
+                    person.age + " years old with a gender of " +
+                    person.gender);
+    });
 }
 main();
