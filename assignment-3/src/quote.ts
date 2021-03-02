@@ -7,6 +7,7 @@ const url:string = "https://api.quotable.io";
 const random:string = "/random";
 const quoteList: string = "/quotes";
 
+// Define the interface for a quote
 interface Quote {
     _id: String,
     tags: Array<String>,
@@ -15,7 +16,9 @@ interface Quote {
     length: Number
 }
 
-
+/*
+Develop 
+*/
 let quotesList:Array<Quote> = [];
 let authorList:Set<Quote['author']> = new Set();
 let tagsSet:Set<String> = new Set();
@@ -46,33 +49,25 @@ quotesRouter.get('/getAllTags', async (request: Request, response: Response): Pr
     return list;
 });
 
-quotesRouter.get('/getQuotesFromAuthor', async(request: Request, response: Response): Promise<Response<Array<Quote>>> => {
-    interface Author {
-        name: String
+/**
+ * Get quotes for specific users and can be able to filter by name
+ * as well as the tag of the quote
+ */
+quotesRouter.get('/getQuotes', async(request: Request, response: Response): Promise<Response<Array<Quote>>> => {
+    const { name } = request.query;
+    const { tag }  = request.query;
+    let result:Array<Quote> = quotesList;
+    if(name !== undefined) {
+        result = quotesList.filter(quote => {
+            return quote['author'].toLowerCase() === `${name}`.toLowerCase();
+        });
     }
-    
-    const author = request.body as Author;
-    console.log(author.name);
-    let result:Array<Quote> = quotesList.filter(quote => {
-        return quote['author'].toLowerCase() === author.name.toLowerCase();
-    });
-
-    return response.json(result);
-});
-
-
-quotesRouter.get('/getQuotesFromTag', async(request: Request, response: Response): Promise<Response<Array<Quote>>> => {
-    interface Tag {
-        tag: String
+    if(tag !== undefined) {
+        result = result.filter(quote => {
+            let tags:Array<String> = quote['tags'];
+            return tags.includes(`${tag}`);
+        });
     }
-    
-    const tag = request.body as Tag;
-
-    let result:Array<Quote> = quotesList.filter(quote => {
-        let tags:Array<String> = quote['tags'];
-        return tags.filter(t => t.toLowerCase() === tag.tag.toLowerCase());
-    });
-
     return response.json(result);
 });
 

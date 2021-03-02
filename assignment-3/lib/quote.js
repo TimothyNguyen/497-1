@@ -42,6 +42,9 @@ var quotesRouter = express_1.Router();
 var url = "https://api.quotable.io";
 var random = "/random";
 var quoteList = "/quotes";
+/*
+Develop
+*/
 var quotesList = [];
 var authorList = new Set();
 var tagsSet = new Set();
@@ -79,25 +82,47 @@ quotesRouter.get('/getAllTags', function (request, response) { return __awaiter(
         return [2 /*return*/, list];
     });
 }); });
-quotesRouter.get('/getQuotesFromAuthor', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var author, result;
-    return __generator(this, function (_a) {
-        author = request.body;
-        console.log(author.name);
-        result = quotesList.filter(function (quote) {
-            return quote['author'].toLowerCase() === author.name.toLowerCase();
-        });
-        return [2 /*return*/, response.json(result)];
+/*
+quotesRouter.get('/getQuotesFromAuthor', async(request: Request, response: Response): Promise<Response<Array<Quote>>> => {
+    
+    let { name } = request.query;
+    let result:Array<Quote> = quotesList.filter(quote => {
+        return quote['author'].toLowerCase() === `${name}`.toLowerCase();
     });
-}); });
-quotesRouter.get('/getQuotesFromTag', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var tag, result;
+
+    return response.json(result);
+});
+
+
+quotesRouter.get('/getQuotesFromTag', async(request: Request, response: Response): Promise<Response<Array<Quote>>> => {
+    
+    const { tag }  = request.query;
+    
+    let result:Array<Quote> = quotesList.filter(quote => {
+        let tags:Array<String> = quote['tags'];
+        return tags.includes(`${tag}`);
+    });
+
+    return response.json(result);
+});
+*/
+quotesRouter.get('/getQuotes', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var name, tag, result;
     return __generator(this, function (_a) {
-        tag = request.body;
-        result = quotesList.filter(function (quote) {
-            var tags = quote['tags'];
-            return tags.filter(function (t) { return t.toLowerCase() === tag.tag.toLowerCase(); });
-        });
+        name = request.query.name;
+        tag = request.query.tag;
+        result = quotesList;
+        if (name !== undefined) {
+            result = quotesList.filter(function (quote) {
+                return quote['author'].toLowerCase() === ("" + name).toLowerCase();
+            });
+        }
+        if (tag !== undefined) {
+            result = result.filter(function (quote) {
+                var tags = quote['tags'];
+                return tags.includes("" + tag);
+            });
+        }
         return [2 /*return*/, response.json(result)];
     });
 }); });
