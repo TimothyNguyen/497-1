@@ -3,8 +3,8 @@ import React from 'react';
 export default function Todo({ todo, index, completeTodo, removeTodo }: {
     todo: any, 
     index:any, 
-    completeTodo: (index: any) => void, 
-    removeTodo: (index: any) => void
+    completeTodo: (i: any) => void, 
+    removeTodo: (i: any) => void
 }) {
   return (
     <div 
@@ -12,11 +12,11 @@ export default function Todo({ todo, index, completeTodo, removeTodo }: {
       style={{ textDecoration: todo.isCompleted ? "line-through" : ""}}>
       {todo.text}
       <div>
-        <button onClick={() => completeTodo(index)}>
+        <button onClick={() => completeTodo(todo.id)}>
         {todo.isCompleted ? (<div>Undo</div>) : (
             <div>Complete</div>
           )}</button>
-        <button onClick={() => removeTodo(index)}>x</button>
+        <button onClick={() => removeTodo(todo.id)}>x</button>
       </div>
     </div>
   );
