@@ -8,25 +8,17 @@ interface TodoInterface {
   completed: Number
   id: any
   last_updated: String
-  text: String
-  title: String
+  todo: String
 }
 
 const App = () => {
 
-  /*
-  const [todos, setTodos] = React.useState([
-    {text: "Learn about React",isCompleted: false},
-    {text: "Meet friend for lunch",isCompleted: false},
-    {text: "Build really cool todo app",isCompleted: false}
-  ]);
-  */
   // const [todosCompleted, setTodosCompleted] = React.useState<Array<TodoInterface>>([])
   const [todos, setTodos] = React.useState<Array<TodoInterface>>([])
 
   React.useEffect(() => {
-    const fetchDataAsync = () => {
-      return axios
+    const fetchDataAsync = async() => {
+      return await axios
               .get("/todo/getTodoList")
               .then((res) => {
                 const tempArray:Array<TodoInterface> = []
@@ -44,25 +36,55 @@ const App = () => {
   }, []);
 
 
-  const addTodo = (todo:TodoInterface) => {
-    const newTodos = [...todos, todo]; 
-    setTodos(newTodos);
+  const addTodo = async (value:String) => {
+    // const [newTodo, setNewTodo] = React.useState('');
+    let id:Number = -1;
+    await axios.post("/todo/createTodo", { todo: value })
+         .then((res) => id = res.data.id as Number)
+         .catch((err) => {
+           console.log(err.response);
+         });
+    await axios.get("/todo/getTodo", {params: {id: id}})
+            .then((res) => {
+              const newTodo = res.data[0] as TodoInterface;
+              const newTodos = [...todos, newTodo]; 
+              setTodos(newTodos);
+            })
+            .catch((err) => {
+              console.log(err.response)
+            });
   };
   
-  const completeTodo = (id: any) => {
+  const completeTodo = async(id: any) => {
     const newTodos = [...todos];
     for(let i = 0; i < newTodos.length; i++) {
       if(newTodos[i].id === id) {
         newTodos[i].completed = (newTodos[i].completed === 0) ? 1 : 0;
+        await axios.patch("/todo/updateTodo", 
+            {
+              id: newTodos[i].id,
+              todo: newTodos[i].todo,
+              completed: newTodos[i].completed,
+            })
+            .catch((err) => {
+              console.log(err.response)
+            });
       }
     }
     setTodos(newTodos);
   };
-  const removeTodo = (id: any) => {
+  const removeTodo = async(id: any) => {
     const newTodos = [...todos];
     for(let i = 0; i < newTodos.length; i++) {
       if(newTodos[i].id === id) {
-        newTodos.splice(i, 1);
+        await axios.post("/todo/deleteTodo", 
+            {
+              id: newTodos[i].id,
+            })
+            .then(() => newTodos.splice(i, 1))
+            .catch((err) => {
+              console.log(err.response)
+            });
       }
     }
     setTodos(newTodos);

@@ -9,8 +9,7 @@ let db = new sqlite3.Database('./todo.db', (err: any) => {
 db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS task(
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      title TEXT,
-      text TEXT,
+      todo TEXT,
       last_updated TEXT,
       completed INTEGER
     )`)
@@ -32,10 +31,10 @@ todosRouter.get("/", async(request: Request, response: Response): Promise<Respon
  * 2. text (String)
  */
 todosRouter.post("/createTodo", async(request: Request, response: Response) => {
-    const {title, text} = request.body;
+    const {todo} = request.body;
     const time:String = Date.now().toString();
-    await db.run(`INSERT INTO task VALUES(?, ?, ?, ?, ?)`, 
-        [null, title, text, time, 0], function(this:any, err:any) {
+    await db.run(`INSERT INTO task VALUES(?, ?, ?, ?)`, 
+        [null, todo, time, 0], function(this:any, err:any) {
         if(err) {
             console.error(response.status(400).json({ "error": err.message }));
             return response.status(400).json({ "error": err.message });
@@ -47,14 +46,14 @@ todosRouter.post("/createTodo", async(request: Request, response: Response) => {
 /**
  * Deletes the todo based off the id.
  */
-todosRouter.delete("/deleteTodo", async(request: Request, response: Response) => {
+todosRouter.post("/deleteTodo", async(request: Request, response: Response) => {
     const {id} = request.body;
     await db.run(`DELETE FROM task WHERE id=${id}`, function(this:any, err:any) {
         if (err) {
           response.status(400).json({"error":err.message});
           return;
         }
-        response.status(200).json({id: this.lastID});  
+        response.status(200).json({success: true});  
     });
 });
 
@@ -89,13 +88,13 @@ todosRouter.get("/getCompletedTodoList", async(request: Request, response: Respo
  * Passes in id, title, text, completed
  */
 todosRouter.patch("/updateTodo", async(request: Request, response: Response) => {
-    const {id, title, text, completed} = request.body;
+    const {id, todo, completed} = request.body;
     const updatedTime:String = Date.now().toString();
     const ans = await new Promise((resolve, reject) => {
         db.all(
-            `UPDATE task SET title =?, text = ?, 
+            `UPDATE task SET todo = ?, 
             last_updated=?, completed=? where id=?`, 
-            [title, text, updatedTime, completed, id],
+            [todo, updatedTime, completed, id],
             function(this:any, err:any) {
                 if(err) {
                     console.error(response.status(400).json({ "error": err.message }));

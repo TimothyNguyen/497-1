@@ -9,11 +9,11 @@ export default function Todo({ todo, index, completeTodo, removeTodo }: {
   return (
     <div 
       className="todo"
-      style={{ textDecoration: todo.isCompleted ? "line-through" : ""}}>
-      {todo.text}
+      style={{ textDecoration: todo.completed === 1 ? "line-through" : ""}}>
+      <li>{todo.todo}</li>
       <div>
         <button onClick={() => completeTodo(todo.id)}>
-        {todo.isCompleted ? (<div>Undo</div>) : (
+        {todo.completed === 1 ? (<div>Undo</div>) : (
             <div>Complete</div>
           )}</button>
         <button onClick={() => removeTodo(todo.id)}>x</button>
