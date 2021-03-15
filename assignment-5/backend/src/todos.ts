@@ -46,8 +46,9 @@ todosRouter.post("/createTodo", async(request: Request, response: Response) => {
 /**
  * Deletes the todo based off the id.
  */
-todosRouter.post("/deleteTodo", async(request: Request, response: Response) => {
-    const {id} = request.body;
+todosRouter.delete("/deleteTodo", async(request: Request, response: Response) => {
+    const { id } = request.query;
+    console.log(id);
     await db.run(`DELETE FROM task WHERE id=${id}`, function(this:any, err:any) {
         if (err) {
           response.status(400).json({"error":err.message});
@@ -87,7 +88,7 @@ todosRouter.get("/getCompletedTodoList", async(request: Request, response: Respo
  * Updates the todo
  * Passes in id, title, text, completed
  */
-todosRouter.patch("/updateTodo", async(request: Request, response: Response) => {
+todosRouter.put("/updateTodo", async(request: Request, response: Response) => {
     const {id, todo, completed} = request.body;
     const updatedTime:String = Date.now().toString();
     const ans = await new Promise((resolve, reject) => {

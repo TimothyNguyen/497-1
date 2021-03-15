@@ -3,22 +3,18 @@ import Todo from './components/Todo';
 import TodoList from './components/TodoList';
 import './App.css';
 import axios from 'axios';
-
-interface TodoInterface {
-  completed: Number
-  id: any
-  last_updated: String
-  todo: String
-}
+import { Card} from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {TodoInterface} from './components/TodoInterface';
 
 const App = () => {
 
-  // const [todosCompleted, setTodosCompleted] = React.useState<Array<TodoInterface>>([])
   const [todos, setTodos] = React.useState<Array<TodoInterface>>([])
+  const [completedTodos, setCompletedTodos] =  React.useState<Array<TodoInterface>>([])
 
   React.useEffect(() => {
     const fetchDataAsync = async() => {
-      return await axios
+        await axios
               .get("/todo/getTodoList")
               .then((res) => {
                 const tempArray:Array<TodoInterface> = []
@@ -31,13 +27,26 @@ const App = () => {
               .catch((err) => {
                 console.log(err.response)
               });
+        
+        await axios
+              .get("/todo/getCompletedTodoList")
+              .then((res) => {
+                const tempArray:Array<TodoInterface> = []
+                for(let i = 0; i < res.data.length; i++) {
+                  const newTodo = res.data[i] as TodoInterface;
+                  tempArray.push(newTodo);
+                }
+                setCompletedTodos([...tempArray]);
+              })
+              .catch((err) => {
+                console.log(err.response)
+              });
     }   
     fetchDataAsync(); 
-  }, []);
+  }, [todos, completedTodos]);
 
 
   const addTodo = async (value:String) => {
-    // const [newTodo, setNewTodo] = React.useState('');
     let id:Number = -1;
     await axios.post("/todo/createTodo", { todo: value })
          .then((res) => id = res.data.id as Number)
@@ -55,13 +64,15 @@ const App = () => {
             });
   };
   
-  const completeTodo = async(id: any) => {
-    const newTodos = [...todos];
+  const completeTodo = async(list:any, 
+                            setList:(i: TodoInterface[]) => void, 
+                            id: any) => {
+    const newTodos = [...list];
     for(let i = 0; i < newTodos.length; i++) {
       if(newTodos[i].id === id) {
-        newTodos[i].completed = (newTodos[i].completed === 0) ? 1 : 0;
-        await axios.patch("/todo/updateTodo", 
-            {
+        if(newTodos[i].completed === 0) newTodos[i].completed = 1;
+        else newTodos[i].completed = 0;
+        await axios.put("/todo/updateTodo", {
               id: newTodos[i].id,
               todo: newTodos[i].todo,
               completed: newTodos[i].completed,
@@ -71,35 +82,57 @@ const App = () => {
             });
       }
     }
-    setTodos(newTodos);
+    setList(newTodos);
   };
-  const removeTodo = async(id: any) => {
-    const newTodos = [...todos];
+
+  const removeTodo = async(list:any, 
+                          setList:(i: TodoInterface[]) => void, 
+                          id: any) => {
+    const newTodos = [...list];
     for(let i = 0; i < newTodos.length; i++) {
       if(newTodos[i].id === id) {
-        await axios.post("/todo/deleteTodo", 
-            {
-              id: newTodos[i].id,
-            })
+        await axios.delete("/todo/deleteTodo", {params: {id: newTodos[i].id}})
             .then(() => newTodos.splice(i, 1))
             .catch((err) => {
               console.log(err.response)
             });
       }
     }
-    setTodos(newTodos);
+    setList(newTodos);
   };
+
   return (
     <div className="app">
-      <div className="todo-list">
-        {todos.map((todo, index) => (
-          <Todo key={todo.id} 
-                index={todo.id} 
-                todo={todo} 
-                completeTodo={completeTodo} 
-                removeTodo={removeTodo} />
-        ))}
+      <div className="container">
+        <h4 className="text-center mb-4">Todo List</h4>
         <TodoList addTodo={addTodo} />
+          <h4 className="text-center">Current Todos</h4>
+          <Card>
+            <Card.Body>
+              {todos.map(todo => (
+                <Todo key={todo.id} 
+                      todo={todo} 
+                      completeTodo={completeTodo} 
+                      removeTodo={removeTodo}
+                      todos={todos}
+                      setTodos={setTodos} />
+              ))}
+            </Card.Body>
+          </Card>
+        <br />
+        <h4 className="text-center">Completed Todos</h4>
+        <Card>
+          <Card.Body>
+            {completedTodos.map(todo => (
+              <Todo key={todo.id} 
+                    todo={todo} 
+                    completeTodo={completeTodo} 
+                    removeTodo={removeTodo}
+                    todos={completedTodos}
+                    setTodos={setCompletedTodos}  />
+            ))}
+          </Card.Body>
+        </Card>
       </div>
     </div>
   );
