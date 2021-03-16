@@ -9,9 +9,21 @@ import {TodoInterface} from './components/TodoInterface';
 
 const App = () => {
 
+  /**
+   * States that contains todos and completedTodo lists
+   */
   const [todos, setTodos] = React.useState<Array<TodoInterface>>([])
   const [completedTodos, setCompletedTodos] =  React.useState<Array<TodoInterface>>([])
 
+  /**
+   * useEffect is a hook for encapsulating code that has ‘side effects,’ and is 
+   * like a combination of componentDidMount, componentDidUpdate, and 
+   * componentWillUnmount. Previously, functional components didn’t have access 
+   * to the component life cycle, but with useEffect you can tap into it.
+   * 
+   * - Utilizes useEffect to load up the todo and completedTodos list
+   * before rendering. It keeps rerendering the newly updated information.
+   */
   React.useEffect(() => {
     const fetchDataAsync = async() => {
         await axios
@@ -45,7 +57,12 @@ const App = () => {
     fetchDataAsync(); 
   }, [todos, completedTodos]);
 
-
+  /**
+   * Add a todo - automatically adds to todo list.
+   * - Once added to database, we make sure to grab
+   * id from the backend and update todo list on the front-end
+   * @param value: String (todo: text) 
+   */
   const addTodo = async (value:String) => {
     let id:Number = -1;
     await axios.post("/todo/createTodo", { todo: value })
@@ -64,9 +81,15 @@ const App = () => {
             });
   };
   
-  const completeTodo = async(list:any, 
+  /**
+   * Update todos by either completing the todo or undoing a completed todo.
+   * @param list: TodoInterface[]
+   * @param setList: function(i: TodoInterface)
+   * @param id
+   */
+  const completeTodo = async(list:TodoInterface[], 
                             setList:(i: TodoInterface[]) => void, 
-                            id: any) => {
+                            id: Number) => {
     const newTodos = [...list];
     for(let i = 0; i < newTodos.length; i++) {
       if(newTodos[i].id === id) {
@@ -85,9 +108,16 @@ const App = () => {
     setList(newTodos);
   };
 
-  const removeTodo = async(list:any, 
+  /**
+   * Deletes the todo on the front-end and backend with the id of
+   * the todo
+   * @param list 
+   * @param setList 
+   * @param id 
+   */
+  const removeTodo = async(list:TodoInterface[], 
                           setList:(i: TodoInterface[]) => void, 
-                          id: any) => {
+                          id: Number) => {
     const newTodos = [...list];
     for(let i = 0; i < newTodos.length; i++) {
       if(newTodos[i].id === id) {
@@ -101,6 +131,9 @@ const App = () => {
     setList(newTodos);
   };
 
+  /**
+   * Renders the todos and done todos lists.
+   */
   return (
     <div className="app">
       <div className="container">

@@ -5,36 +5,67 @@ import './todo.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {TodoInterface} from './TodoInterface';
 
+/**
+ * A todo functional component
+ * @param todo: TodoInterface
+ * @param completeTodo: function to either finish todo or uncomplete the todo
+ * @param removeTodo: function to remove todo, which removes from database and front-end
+ * @param todos: TodoInterface[] list of either completed or uncompleted todos (depends what's passed in)
+ * @param setTodos: function to set todos list. 
+ * @returns 
+ */
 export default function Todo({ todo, completeTodo, removeTodo, todos, setTodos }: {
-    todo: any, 
-    completeTodo: (list:any, 
+    todo: TodoInterface, 
+    completeTodo: (list:TodoInterface[], 
       setList:(i: TodoInterface[]) => void, 
-      id: any) => void, 
-    removeTodo: (list:any, 
+      id: Number) => void, 
+    removeTodo: (list:TodoInterface[], 
       setList:(i: TodoInterface[]) => void, 
-      id: any) => void,
-    todos:any,
+      id: Number) => void,
+    todos:TodoInterface[],
     setTodos: (i: TodoInterface[]) => void
 }) {
-  const [edit, setEdit] = React.useState(false);
-  const [todoTask, setTodoTask] = React.useState(todo.todo);
-  const [editTask, setEditTask] = React.useState(todo.todo);
 
-  const handleEdit = () => {
+  /**
+   * edit - boolean to indicate if you're editing a todo or not
+   * todoTask - todo information
+   * editTask - information to capture todo information when editing essentially
+   */
+  const [edit, setEdit] = React.useState<boolean>(false);
+  const [todoTask, setTodoTask] = React.useState<string>(todo.todo);
+  const [editTask, setEditTask] = React.useState<string>(todo.todo);
+
+  /**
+   * Turns on/off editing mode for a todo.
+   */
+  const handleEdit = ():void => {
     setEdit(!edit);
   }
 
-  const cancelTask = () => {
+  /**
+   * Cancels the todo editing. Reverts back to todo info previously
+   */
+  const cancelTask = ():void => {
     setEditTask(todoTask);
     handleEdit();
   }
 
-  const handleEditChange = async(e:any) => {
+  /**
+   * 
+   * @param e 
+   * Data to handle editing the task in editing mode. Only changes on front-end,
+   * but not on backend.
+   */
+  const handleEditChange = async(e:any):Promise<void> => {
     setEditTask(e.target.value);
   };
 
-  
-  const handleEditSubmit = async(id:any) => {
+  /**
+   * 
+   * @param id 
+   * Updates todo and makes new changes to that todo item
+   */
+  const handleEditSubmit = (id:any):void => {
       setTodoTask(editTask);
       axios.put("/todo/updateTodo", 
         {
@@ -46,16 +77,21 @@ export default function Todo({ todo, completeTodo, removeTodo, todos, setTodos }
           console.log(err.response)
         });
     
+    /**
+     * Making sure that it renders correctly on the front-end
+     */
     const newTodoList = todos.map((theTodo:TodoInterface) => {
-      if (theTodo.id === id) {
-        theTodo.todo = editTask;
-      }
+      if (theTodo.id === id) theTodo.todo = editTask;
       return theTodo;
     });
+
     setTodos(newTodoList);
     handleEdit();
   }
 
+  /**
+   * React render of the todo component
+   */
   return (
     <div className="todo">
       {!edit ? (

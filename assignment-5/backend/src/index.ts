@@ -9,6 +9,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use('/todo', todosRouter);
 
+// We run our app on localhost:5000
 app.listen(5000, () => {
   console.log('Server started');
 });

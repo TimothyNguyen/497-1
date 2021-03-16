@@ -6,7 +6,8 @@ Libraries utilized:
 
 To run the code:
 Open terminal:
-    > cd assignment-4
+    > cd assignment-5/backend
+    > npm install (if not install)
     > tsc
     > npm start
 
@@ -22,47 +23,41 @@ in the database "todo.db". If the database isn't created, we
 then create the "task" table to store all information. Our task
 table has these entries:
 - id INTEGER PRIMARY KEY AUTOINCREMENT,
-- title TEXT,
-- text TEXT,
+- todo TEXT,
 - last_updated TEXT,
 - completed INTEGER
 
 Below, I create a simple todo application that does the following:
 
 1. Get a todo based off the id (in this case the first id)
-GET: http://localhost:3000/todo/getTodo?id=1
+GET: http://localhost:5000/todo/getTodo?id=1
 2. Create a new todo
-POST: http://localhost:3000/todo/createTodo
+POST: http://localhost:5000/todo/createTodo
 - Go to body, set raw and json on postman
 { 
-    "title": "Stats 697V: Homework 5",
-    "text": "Create plot for plotly with symbols"
+    "todo": "Stats 697V: Homework 5",
 }
 3. Delete a todo item based on id
-DELETE: http://localhost:3000/todo/deleteTodo
-- Go to body, set raw and json on postman
-{
-    "id": 3
-}
+DELETE: http://localhost:5000/todo/deleteTodo?id=20
 4. Update a todo item
-PATCH: http://localhost:3000/todo/updateTodo
+PUT: http://localhost:5000/todo/updateTodo
 - Go to body, set raw and json on postman
+- Only works if the id exists
 {
-    "id": 1,
-    "title": "Scalable Web Systems: 497S - Hwk 5",
-    "text": "Front-end",
+    "id": 5,
+    "todo": "Scalable Web Systems: 497S - Hwk 5",
     "completed": 1
 }
 5. Get all todos not completed
-GET: http://localhost:3000/todo/getTodoList
+GET: http://localhost:5000/todo/getTodoList
 6. Get all todos completed
-GET: http://localhost:3000/todo/getCompletedTodoList
+GET: http://localhost:5000/todo/getCompletedTodoList
 
 
 Note: src folder stores the typescript files while lib stores the outputted js files after the command `tsc`
 
 File Directory:
-assignment-4/
+backend/
     package.json
     tsconfig.json
     package-lock.json

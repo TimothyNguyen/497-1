@@ -2,9 +2,14 @@ import React from 'react';
 import { Button, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
+/**
+ * 
+ * @param addTodo: function that is utilized to addTodos from the front-end.
+ *        - Looking to update todos in the front-end and back-end.
+ * @returns 
+ */
 export default function TodoList({ addTodo }: {
-    addTodo: (index: any) => void, 
+    addTodo: (index: string) => void, 
 }) {
     const [value, setValue] = React.useState("");
     const handleSubmit = async (event:any) => {
@@ -13,6 +18,10 @@ export default function TodoList({ addTodo }: {
       addTodo(value);
       setValue("");
     }
+
+    /**
+     * Renders an input text form and submit button to add new todos to the list.
+     */
     return (
       <Form onSubmit={handleSubmit}>
         <Form.Group>

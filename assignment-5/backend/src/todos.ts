@@ -1,11 +1,17 @@
 import { Router, Request, Response } from 'express';
   
+/**
+ * Initializes the database for sqlite3.
+ */
 let sqlite3 = require('sqlite3').verbose();
 let db = new sqlite3.Database('./todo.db', (err: any) => {
     if (err) console.error(err.message);
     console.log('Connected to the todo database.');
   });
 
+/**
+ * Creates the "task" table if it's not already created
+ */
 db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS task(
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -15,6 +21,7 @@ db.serialize(() => {
     )`)
 });
 
+// Router for todos
 const todosRouter = Router();
 
 /**
@@ -27,8 +34,7 @@ todosRouter.get("/", async(request: Request, response: Response): Promise<Respon
 /**
  * Creates a new todo item. Automatically sets to not completed (0) and provides time updated.
  * Needs a 
- * 1. title (String)
- * 2. text (String)
+ * 1. todo (String)
  */
 todosRouter.post("/createTodo", async(request: Request, response: Response) => {
     const {todo} = request.body;
